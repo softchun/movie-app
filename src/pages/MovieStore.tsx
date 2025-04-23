@@ -101,11 +101,43 @@ const MovieStore: React.FC = () => {
     setCart([]);
   };
 
+  const increaseQuantity = (movieId: number) => {
+    setCart((prev) =>
+      prev.map((item) =>
+        item.id === movieId && item.quantity < 99
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    );
+  };
+
+  const decreaseQuantity = (movieId: number) => {
+    setCart((prev) =>
+      prev
+        .map((item) =>
+          item.id === movieId && item.quantity > 1
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+  };
+
+  const removeItem = (movieId: number) => {
+    setCart((prev) => prev.filter((item) => item.id !== movieId));
+  };
+
   return (
     <div className="h-screen w-screen flex flex-col">
       <div className="z-40 h-16 w-full max-w-screen flex items-center justify-between px-4 bg-[#C890A7]">
         <div className="text-xl font-bold text-[#212121]">🍿 Movie App</div>
-        <Cart items={cart} clearCart={clearCart} />
+        <Cart
+          items={cart}
+          clearCart={clearCart}
+          increaseQuantity={increaseQuantity}
+          decreaseQuantity={decreaseQuantity}
+          removeItem={removeItem}
+        />
       </div>
       <div className="p-6 flex-1 flex flex-col gap-6 w-full overflow-auto">
         <div className="flex gap-2">

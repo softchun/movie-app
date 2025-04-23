@@ -5,9 +5,18 @@ import PaymentPopup from "./PaymentPopup";
 type Props = {
   items: CartItem[];
   clearCart: () => void;
+  increaseQuantity: (movieId: number) => void;
+  decreaseQuantity: (movieId: number) => void;
+  removeItem: (movieId: number) => void;
 };
 
-const Cart: React.FC<Props> = ({ items, clearCart }) => {
+const Cart: React.FC<Props> = ({
+  items,
+  clearCart,
+  increaseQuantity,
+  decreaseQuantity,
+  removeItem,
+}) => {
   const [showCart, setShowCart] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [countdown, setCountdown] = useState(60);
@@ -40,6 +49,7 @@ const Cart: React.FC<Props> = ({ items, clearCart }) => {
     setShowPopup(true);
     setCountdown(60);
   };
+
   return (
     <div className="relative">
       <div
@@ -48,8 +58,8 @@ const Cart: React.FC<Props> = ({ items, clearCart }) => {
       >
         🛒
         {items.length > 0 && (
-          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#A35C7A] flex justify-center items-center text-sm text-white">
-            {totalItems}
+          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#A35C7A] flex justify-center items-center text-[11px] text-white">
+            {totalItems > 99 ? "99+" : totalItems}
           </div>
         )}
       </div>
@@ -66,19 +76,44 @@ const Cart: React.FC<Props> = ({ items, clearCart }) => {
               </button>
             )}
           </div>
-          {items.map((item) => (
-            <div key={item.id} className="flex justify-between gap-2">
-              <div>
-                <div className="font-medium inline">{item.title}</div>{" "}
-                <div className="font-light text-nowrap inline">
-                  x {item.quantity}
+          <div className="flex flex-col gap-1">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-start justify-between gap-2"
+              >
+                <div className="font-medium leading-5">{item.title}</div>
+                <div className="flex gap-2">
+                  <div className="font-light flex items-center justify-center gap-1 w-[65px]">
+                    <button
+                      onClick={() => decreaseQuantity(item.id)}
+                      disabled={item.quantity <= 1}
+                      className="text-[#A35C7A] text-sm w-5 h-5 flex items-center justify-center rounded-full bg-[#FBF5E5]"
+                    >
+                      -
+                    </button>
+                    {item.quantity}
+                    <button
+                      onClick={() => increaseQuantity(item.id)}
+                      disabled={item.quantity >= 99}
+                      className="text-[#A35C7A] text-sm w-5 h-5 flex items-center justify-center p-1 rounded-full bg-[#FBF5E5]"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="text-nowrap text-[#A35C7A] flex flex-nowrap items-center justify-end gap-2 w-[85px]">
+                    {((item.price ?? 0) * item.quantity).toLocaleString()} ฿
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-[#A35C7A] text-sm w-5 h-5 flex items-center justify-center p-1 rounded-full bg-[#FBF5E5]"
+                    >
+                      ✖
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="text-nowrap text-[#A35C7A]">
-                {((item.price ?? 0) * item.quantity).toLocaleString()} ฿
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
           {items.length === 0 && (
             <div className="text-base text-gray-500 text-center my-6">
               No item
@@ -87,7 +122,8 @@ const Cart: React.FC<Props> = ({ items, clearCart }) => {
           {items.length > 0 && (
             <>
               <div className="text-sm text-gray-500 flex justify-between mt-2">
-                Subtotal: <div>{subTotal.toLocaleString()} ฿</div>
+                Subtotal ({totalItems.toLocaleString()}):{" "}
+                <div>{subTotal.toLocaleString()} ฿</div>
               </div>
               <div className="text-sm text-gray-500 flex justify-between">
                 Discount: <div>{discount.toLocaleString()} ฿</div>
