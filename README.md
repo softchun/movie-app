@@ -1,5 +1,11 @@
 # React TypeScript Movie App
 
+## 🚀 Demo
+
+https://movie00-app.netlify.app/
+
+---
+
 ## ⚙️ Tech Stack
 
 - [React](https://reactjs.org/)
